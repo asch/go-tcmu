@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/coreos/go-tcmu/scsi"
+	"github.com/asch/go-tcmu/scsi"
 	"golang.org/x/sys/unix"
 )
 
