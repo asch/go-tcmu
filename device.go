@@ -5,7 +5,6 @@ package tcmu
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -264,12 +263,12 @@ func (d *Device) findDevice() error {
 		split := strings.SplitN(strings.TrimRight(string(bytes), "\n"), "/", 4)
 		if split[0] != "tcm-user" {
 			// Not a TCM device
-			log.Debugf("%s is not a tcm-user device", i.Name())
+			logrus.Debugf("%s is not a tcm-user device", i.Name())
 			return nil
 		}
 		if split[3] != d.GetDevConfig() {
 			// Not a TCM device
-			log.Debugf("%s is not our tcm-user device", i.Name())
+			logrus.Debugf("%s is not our tcm-user device", i.Name())
 			return nil
 		}
 		err = d.openDevice(split[1], split[2], i.Name())
@@ -307,13 +306,13 @@ func (d *Device) openDevice(user string, vol string, uio string) error {
 }
 
 func (d *Device) debugPrintMb() {
-	log.Debugf("Got a TCMU mailbox, version: %d\n", d.mbVersion())
-	log.Debugf("mapsize: %d\n", d.mapsize)
-	log.Debugf("mbFlags: %d\n", d.mbFlags())
-	log.Debugf("mbCmdrOffset: %d\n", d.mbCmdrOffset())
-	log.Debugf("mbCmdrSize: %d\n", d.mbCmdrSize())
-	log.Debugf("mbCmdHead: %d\n", d.mbCmdHead())
-	log.Debugf("mbCmdTail: %d\n", d.mbCmdTail())
+	logrus.Debugf("Got a TCMU mailbox, version: %d\n", d.mbVersion())
+	logrus.Debugf("mapsize: %d\n", d.mapsize)
+	logrus.Debugf("mbFlags: %d\n", d.mbFlags())
+	logrus.Debugf("mbCmdrOffset: %d\n", d.mbCmdrOffset())
+	logrus.Debugf("mbCmdrSize: %d\n", d.mbCmdrSize())
+	logrus.Debugf("mbCmdHead: %d\n", d.mbCmdHead())
+	logrus.Debugf("mbCmdTail: %d\n", d.mbCmdTail())
 }
 
 func (d *Device) teardown() error {

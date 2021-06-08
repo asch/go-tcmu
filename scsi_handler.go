@@ -7,10 +7,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"sync"
 
 	"github.com/asch/go-tcmu/scsi"
+	"github.com/sirupsen/logrus"
 )
 
 // SCSICmd represents a single SCSI command recieved from the kernel to the virtual target.
@@ -69,7 +69,7 @@ func (c *SCSICmd) LBA() uint64 {
 	case 16:
 		return uint64(order.Uint64(c.cdb[2:10]))
 	default:
-		log.Errorf("What LBA has this length: %d", c.CdbLen())
+		logrus.Errorf("What LBA has this length: %d", c.CdbLen())
 		panic("unusal scsi command length")
 	}
 }
@@ -87,7 +87,7 @@ func (c *SCSICmd) XferLen() uint32 {
 	case 16:
 		return uint32(order.Uint32(c.cdb[10:14]))
 	default:
-		log.Errorf("What XferLen has this length: %d", c.CdbLen())
+		logrus.Errorf("What XferLen has this length: %d", c.CdbLen())
 		panic("unusal scsi command length")
 	}
 }
@@ -339,7 +339,7 @@ func SingleThreadedDevReady(h SCSICmdHandler) DevReadyFunc {
 				x, err := h.HandleCommand(v)
 				buf = v.Buf
 				if err != nil {
-					log.Error(err)
+					logrus.Error(err)
 					return
 				}
 				out <- x
@@ -366,7 +366,7 @@ func MultiThreadedDevReady(h SCSICmdHandler, threads int) DevReadyFunc {
 						x, err := h.HandleCommand(v)
 						buf = v.Buf
 						if err != nil {
-							log.Error(err)
+							logrus.Error(err)
 							return
 						}
 						out <- x

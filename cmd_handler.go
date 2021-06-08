@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/binary"
 	"io"
-	"log"
 
-	"github.com/asch/go-tcmu/scsi"
+	"github.com/coreos/go-tcmu/scsi"
+	"github.com/sirupsen/logrus"
+
 )
 
 // SCSICmdHandler is a simple request/response handler for SCSI commands coming to TCMU.
@@ -53,7 +54,7 @@ func (h ReadWriterAtCmdHandler) HandleCommand(cmd *SCSICmd) (SCSIResponse, error
 	case scsi.Write6, scsi.Write10, scsi.Write12, scsi.Write16:
 		return EmulateWrite(cmd, h.RW)
 	default:
-		log.Debugf("Ignore unknown SCSI command 0x%x\n", cmd.Command())
+		logrus.Debugf("Ignore unknown SCSI command 0x%x\n", cmd.Command())
 	}
 	return cmd.NotHandled(), nil
 }
@@ -100,7 +101,7 @@ func EmulateStdInquiry(cmd *SCSICmd, inq *InquiryInfo) (SCSIResponse, error) {
 
 func EmulateEvpdInquiry(cmd *SCSICmd, inq *InquiryInfo) (SCSIResponse, error) {
 	vpdType := cmd.GetCDB(2)
-	log.Debugf("SCSI EVPD Inquiry 0x%x\n", vpdType)
+	logrus.Debugf("SCSI EVPD Inquiry 0x%x\n", vpdType)
 	switch vpdType {
 	case 0x0: // Supported VPD pages
 		// The absolute minimum.
@@ -313,7 +314,7 @@ func EmulateModeSelect(cmd *SCSICmd, wce bool) (SCSIResponse, error) {
 	/* Verify what was selected is identical to what sense returns, since we
 	don't support actually setting anything. */
 	if !bytes.Equal(inBuf[hdrLen:len(b)], b) {
-		log.Errorf("not equal for some reason: %#v %#v", inBuf[hdrLen:len(b)], b)
+		logrus.Errorf("not equal for some reason: %#v %#v", inBuf[hdrLen:len(b)], b)
 		return cmd.CheckCondition(scsi.SenseIllegalRequest, scsi.AscInvalidFieldInParameterList), nil
 	}
 	return cmd.Ok(), nil
@@ -331,20 +332,20 @@ func EmulateRead(cmd *SCSICmd, r io.ReaderAt) (SCSIResponse, error) {
 	}
 	n, err := r.ReadAt(cmd.Buf[:length], int64(offset))
 	if n < length {
-		log.Errorln("read/read failed: unable to copy enough")
+		logrus.Errorln("read/read failed: unable to copy enough")
 		return cmd.MediumError(), nil
 	}
 	if err != nil {
-		log.Errorln("read/read failed: error:", err)
+		logrus.Errorln("read/read failed: error:", err)
 		return cmd.MediumError(), nil
 	}
 	n, err = cmd.Write(cmd.Buf[:length])
 	if n < length {
-		log.Errorln("read/write failed: unable to copy enough")
+		logrus.Errorln("read/write failed: unable to copy enough")
 		return cmd.MediumError(), nil
 	}
 	if err != nil {
-		log.Errorln("read/write failed: error:", err)
+		logrus.Errorln("read/write failed: error:", err)
 		return cmd.MediumError(), nil
 	}
 	return cmd.Ok(), nil
@@ -362,20 +363,20 @@ func EmulateWrite(cmd *SCSICmd, r io.WriterAt) (SCSIResponse, error) {
 	}
 	n, err := cmd.Read(cmd.Buf[:int(length)])
 	if n < length {
-		log.Errorln("write/read failed: unable to copy enough")
+		logrus.Errorln("write/read failed: unable to copy enough")
 		return cmd.MediumError(), nil
 	}
 	if err != nil {
-		log.Errorln("write/read failed: error:", err)
+		logrus.Errorln("write/read failed: error:", err)
 		return cmd.MediumError(), nil
 	}
 	n, err = r.WriteAt(cmd.Buf[:length], int64(offset))
 	if n < length {
-		log.Errorln("write/write failed: unable to copy enough")
+		logrus.Errorln("write/write failed: unable to copy enough")
 		return cmd.MediumError(), nil
 	}
 	if err != nil {
-		log.Errorln("write/write failed: error:", err)
+		logrus.Errorln("write/write failed: error:", err)
 		return cmd.MediumError(), nil
 	}
 	return cmd.Ok(), nil
