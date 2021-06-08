@@ -5,6 +5,7 @@ package tcmu
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -15,7 +16,6 @@ import (
 
 	"golang.org/x/sys/unix"
 
-	"github.com/prometheus/common/log"
 	"github.com/sirupsen/logrus"
 )
 

@@ -2,9 +2,9 @@ package tcmu
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/coreos/go-tcmu/scsi"
-	"github.com/prometheus/common/log"
 	"golang.org/x/sys/unix"
 )
 
