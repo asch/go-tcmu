@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/asch/go-tcmu"
+	"github.com/coreos/go-tcmu"
 	"github.com/sirupsen/logrus"
 )
 
