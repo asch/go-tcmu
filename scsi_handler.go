@@ -9,7 +9,7 @@ import (
 	"io"
 	"sync"
 
-	"github.com/asch/go-tcmu/scsi"
+	"github.com/coreos/go-tcmu/scsi"
 	"github.com/sirupsen/logrus"
 )
 

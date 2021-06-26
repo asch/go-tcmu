@@ -3,7 +3,7 @@ package tcmu
 import (
 	"fmt"
 
-	"github.com/asch/go-tcmu/scsi"
+	"github.com/coreos/go-tcmu/scsi"
 	"golang.org/x/sys/unix"
 	"github.com/sirupsen/logrus"
 )
